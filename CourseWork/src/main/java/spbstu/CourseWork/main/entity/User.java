@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "users", schema = "library")
 public class User implements UserDetails {
 
     @Id
@@ -24,13 +24,13 @@ public class User implements UserDetails {
     private Integer id;
 
     @Column(name = "name", nullable = false, unique = true)
-    private String userName;
+    private String name;
 
-    @Column(name = "password", unique = true)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "role_id"))
     @Column(name = "role")
     private List<String> roles = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class User implements UserDetails {
     }
 
     public User(String userName, String password, List<String> roles) {
-        this.userName = userName;
+        this.name = userName;
         this.password = password;
         this.roles = roles;
     }
@@ -59,7 +59,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName;
+        return name;
     }
 
     @Override

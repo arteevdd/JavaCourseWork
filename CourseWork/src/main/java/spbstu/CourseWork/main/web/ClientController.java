@@ -3,16 +3,14 @@ package spbstu.CourseWork.main.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import spbstu.CourseWork.main.entity.Client;
 import spbstu.CourseWork.main.exception.ClientNotFoundException;
 import spbstu.CourseWork.main.service.ClientService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/client")
@@ -81,6 +79,14 @@ public class ClientController {
         }catch (ClientNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
+    }
+
+    @PutMapping("/update-client/{id}")
+    public void updateClient(@PathVariable Integer id, @RequestBody Map<String, String> json){
+        String firstName = json.get("firstName");
+        String lastName = json.get("lastName");
+        String fatherName = json.get("fatherName");
+        clientService.updateClient(id, firstName, lastName, fatherName);
     }
 
 }

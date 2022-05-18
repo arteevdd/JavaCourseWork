@@ -1,29 +1,18 @@
 package spbstu.CourseWork.main.web;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Getter;
+import lombok.Setter;
 
-public class AuthRequest implements Serializable {
+@Getter
+@Setter
+@JsonSerialize
+public class AuthRequest  {
     private String userName;
     private String password;
 
     public AuthRequest(String userName, String password) {
         this.userName = userName;
-        this.password = password;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
     }
 }

@@ -49,4 +49,9 @@ public class ClientServiceImpl implements ClientService{
     public List<Client> findByPassportNum(String num) {
         return (List<Client>) clientsRepository.findByPassportNum(num);
     }
+
+    @Override
+    public void updateClient(Integer id, String firstName, String lastName, String fatherName) {
+        clientsRepository.updateClient(id, firstName, lastName, fatherName);
+    }
 }

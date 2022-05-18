@@ -32,7 +32,7 @@ public interface ClientsRepository extends CrudRepository<Client, Integer> {
            "c.lastName = :newLastName, " +
            "c.fatherName = :newFatherName " +
            "WHERE c.id = :id")
-    int updateClient(
+    void updateClient(
             @Param("id") Integer id,
             @Param("newFirstName") String newFirstName,
             @Param("newLastName") String newLastName,

@@ -12,5 +12,5 @@ public interface ClientService {
     List<Client> findByPassportSeria(String seria);
     List<Client> findByPassportNum(String num);
 
-    //запрос на update ????
+    void updateClient(Integer id, String firstName, String lastName, String fatherName);
 }

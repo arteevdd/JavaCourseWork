@@ -23,9 +23,9 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
         if (token != null && jwtTokenProvider.validateToken(token)){
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            if (authentication != null){
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication auth = jwtTokenProvider.getAuthentication(token);
+            if (auth != null){
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
         filterChain.doFilter(servletRequest, servletResponse);

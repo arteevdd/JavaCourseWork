@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-import spbstu.CourseWork.main.exception.InvalidJwtAuthentificationExceprion;
+import spbstu.CourseWork.main.exception.InvalidJwtAuthenticationException;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +38,7 @@ public class JwtTokenProvider {
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + jwtProperties.getValidityInMs());
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
@@ -51,17 +52,17 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token){
-        try{
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            return !claims.getBody().getExpiration().before(new Date());
-        }catch (JwtException | IllegalArgumentException e){
-            throw new InvalidJwtAuthentificationExceprion("Expired or invalid token");
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            return !claimsJws.getBody().getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e){
+            throw new InvalidJwtAuthenticationException("Expired or invalid token");
         }
     }
 
     public String resolveToken(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");
-        if(bearerToken != null && bearerToken.startsWith("Bearer ")){
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring(7);
         }
         return null;

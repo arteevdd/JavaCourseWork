@@ -6,15 +6,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import spbstu.CourseWork.main.entity.User;
 import spbstu.CourseWork.main.repository.UserRepository;
 import spbstu.CourseWork.main.security.jwt.JwtTokenProvider;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,21 +32,53 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
 
-    @PostMapping("/signin")
-    public ResponseEntity signIn(@RequestBody AuthRequest request){
-        try {
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+//    @PostMapping(name = "/signin", consumes = "application/json", produces = "application/json")
+//    public ResponseEntity signIn(@RequestBody AuthRequest request){
+//        try {
+//            String name = request.getUserName();
+//            String token = jwtTokenProvider.createToken(
+//                    name,
+//                    userRepository.findUserByName(name)
+//                            .orElseThrow(() -> new UsernameNotFoundException("User not found")).getRoles()
+//            );
+//            Map<Object, Object> model = new HashMap<>();
+//            model.put("userName", name);
+//            model.put("token", token);
+//
+//            return ResponseEntity.ok(model);
+//        }catch (AuthenticationException e){
+//            throw new BadCredentialsException("Invalid username or password");
+//        }
+//    }
+
+
+    @PostMapping(value = "/signIn", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<String> signIn(@RequestBody AuthRequest request) {
+        try{
             String name = request.getUserName();
+            String password = request.getPassword();
+            Optional<User> user = userRepository.findUserByName(name);
+            boolean passwordMatch = false;
+            if (user.isPresent()) {
+                User us = user.get();
+                passwordMatch = passwordEncoder.matches(password, us.getPassword());
+            }
+
+            if (!passwordMatch)
+                throw new BadCredentialsException("Invalid username or password");
+
+
             String token = jwtTokenProvider.createToken(
                     name,
-                    userRepository.findUserByUserName(name)
+                    user
                             .orElseThrow(() -> new UsernameNotFoundException("User not found")).getRoles()
             );
-            Map<Object, Object> model = new HashMap<>();
-            model.put("userName", name);
-            model.put("token", token);
 
-            return ResponseEntity.ok(model);
-        }catch (AuthenticationException e){
+            return ResponseEntity.ok(token);
+        } catch (AuthenticationException ex) {
             throw new BadCredentialsException("Invalid username or password");
         }
     }
